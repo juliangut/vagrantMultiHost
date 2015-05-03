@@ -1,0 +1,7 @@
+* text=auto
+
+.gitattributes text
+.gitignore     text
+
+/LICENSE   export-ignore
+/README.md export-ignore

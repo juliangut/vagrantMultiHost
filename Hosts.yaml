@@ -1,0 +1,50 @@
+---
+# Path to run scripts directory
+path: vagrant
+
+# Custom boxes
+boxes:
+    trusty64: https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box
+
+# Configured hosts
+hosts:
+    - name: web
+      identifier: web.vagrantMultiHost.dev
+      autostart: true
+      box: laravel/homestead
+      ip: 192.168.10.10
+      provider:
+          - { directive: memory, value: "2048" }
+      ports:
+        - { map: 7777, to: 777, protocol: udp }
+      authorize: ~/.ssh/id_rsa.pub
+      keys:
+        - ~/.ssh/id_rsa
+      folders:
+        - { map: ./, to: /var/www/html }
+      sites:
+        - { map: vagrantMultiHost.dev, to: /var/www/html/public }
+      variables:
+        - { key: APP_ENV, value: dev }
+      provision:
+        - ./vagrant/scripts/aliases.sh
+        - ./vagrant/scripts/composer.sh
+      #blackfire:
+      #  - id: foo
+      #    token: bar
+      #    client-id: foo
+      #    client-token: bar
+
+    - name: ddbb
+      identifier: ddbb.vagrantMultiHost.dev
+      box: laravel/homestead
+      ip: 192.168.10.80
+      provider:
+        - { directive: memory, value: "1024" }
+      authorize: ~/.ssh/id_rsa.pub
+      keys:
+        - ~/.ssh/id_rsa
+      databases:
+        - vagrantMultiHost
+      provision:
+        - ./vagrant/scripts/aliases.sh
