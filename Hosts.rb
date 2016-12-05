@@ -5,6 +5,7 @@ class Hosts
 
     # Prevent TTY errors
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    config.ssh.forward_agent = true
 
     # Limit port range
     config.vm.usable_port_range = (10200..10500)
@@ -27,7 +28,15 @@ class Hosts
         end
 
         server.vm.hostname = host['identifier']
-        server.vm.network 'private_network', ip: host['ip'] ||= '192.168.10.10#{index}'
+
+        if host['ip'].kind_of?(Array)
+            host['ip'].each do |ip|
+                server.vm.network 'private_network', ip: ip
+            end
+        else
+            server.vm.network 'private_network', ip: host['ip'] ||= '192.168.10.10#{index}'
+        end
+
 
         # VirtulBox machine configuration
         server.vm.provider :virtualbox do |vb|
